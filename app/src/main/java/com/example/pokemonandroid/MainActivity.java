@@ -1,9 +1,8 @@
 package com.example.pokemonandroid;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,16 +12,21 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Random;
+import java.util.List;
 
 import utilities.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
     Button testButton;
+    DBHandler dbhelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.dbhelper = new DBHandler(getApplicationContext());
+        this.dbhelper.insertTeam("My favorites", "pikachu", "snorlax", "bulbasaur", "psyduck", "charmander" );
+        List<String> team1 =this.dbhelper.getTeamByName("My favorites");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
                 new PokeAPIQueryTask().execute(url);
             }
         });
+
+
     }
 
     public class PokeAPIQueryTask extends AsyncTask<URL, Void, String> {
