@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class DBHandler extends SQLiteOpenHelper {
@@ -64,5 +66,38 @@ public class DBHandler extends SQLiteOpenHelper {
             }
             return myteam;
         }
+        public Map<String, List<String>> getAllTeams() {
+            Map<String, List<String>> mapOfteams = new TreeMap<String, List<String>>();
+            SQLiteDatabase db = this.getReadableDatabase();
+            List<String> teamsNames = new ArrayList<String>();
+            Cursor myCursor =
+                    db.rawQuery("SELECT nameOfTeam FROM team", null);
+            while (myCursor.moveToNext()) {
+                String nameOfTeam = myCursor.getString(0);
+                teamsNames.add(nameOfTeam);
+            }
+            for (String name : teamsNames) {
+                List<String> teamsPokemons = getTeamByName(name);
+                mapOfteams.put(name, teamsPokemons);
+            }
+            return mapOfteams;
+        }
+        public boolean createNewEmptyTeam(String teamName){
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("nameOfTeam",teamName );
+            // Insert the new row, returning the primary key value of the new row
+            long newRowId = db.insert("team", null, values);
+            return true;
+        }
+        public boolean addNewPokemonToExistingTeam(String pokemonsName, String TeamsName){
+            List<String> existingPokemonsInTeam =getTeamByName(TeamsName);
+            existingPokemonsInTeam.add(pokemonsName);
+            for(String s :existingPokemonsInTeam){
+
+            }
+            return false;
+        }
+
     }
 
