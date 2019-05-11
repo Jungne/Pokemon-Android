@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/seDetailbutton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/teamDetailstextView" />
+        app:layout_constraintTop_toBottomOf="@+id/inputTeamNameTextView" />
 
     <TextView
         android:id="@+id/teamDetailstextView"
@@ -43,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="225dp"
+        android:onClick="OnClickButtons"
         android:text="Remove from Team"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -53,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="72dp"
         android:layout_marginBottom="25dp"
+        android:onClick="OnClickButtons"
         android:text="Se details"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,6 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="246dp"
         android:layout_marginStart="36dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/addNewTeambutton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/myTeamstextView" />
@@ -72,6 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
+        android:onClick="OnClickButtons"
         android:text="Add new Team"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/myTeamsListView"
@@ -82,6 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="1dp"
+        android:onClick="OnClickButtons"
         android:text="Remove Team"
         app:layout_constraintEnd_toEndOf="@+id/addNewTeambutton"
         app:layout_constraintTop_toBottomOf="@+id/addNewTeambutton" />
@@ -92,8 +97,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
         android:layout_marginEnd="17dp"
+        android:onClick="OnClickButtons"
         android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/inputTeamNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="98dp"
+        android:layout_marginEnd="59dp"
+        android:layout_marginBottom="353dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/teamdetails"
+        app:layout_constraintEnd_toEndOf="@+id/myTeamsListView"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </android.support.constraint.ConstraintLayout>

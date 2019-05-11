@@ -1,5 +1,6 @@
 package com.example.pokemonandroid;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.dbhelper = new DBHandler(getApplicationContext());
-        this.dbhelper.insertTeam("My favorites", "pikachu", "snorlax", "bulbasaur", "psyduck", "charmander" );
+        //this.dbhelper.insertTeam("My favorites", "pikachu", "snorlax", "bulbasaur", "psyduck", "charmander" );
         List<String> team1 =this.dbhelper.getTeamByName("My favorites");
 
         super.onCreate(savedInstanceState);
@@ -41,7 +42,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+    public void gotoMyTeams(View view)
+    {
+        Intent myIntent = new Intent(this, MyTeamsActivity.class);
+        startActivity(myIntent);
+    }
     public class PokeAPIQueryTask extends AsyncTask<URL, Void, String> {
         @Override
         protected String doInBackground(URL... urls) {
