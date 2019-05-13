@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button testButton;
     DBHandler dbhelper;
+    String pokemonName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button testButton = findViewById(R.id.testButton);
+        final Button testButton = findViewById(R.id.randomPokemonButton);
         testButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String pokeID = String.valueOf((int)(Math.random() * 151) + 1);
@@ -67,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject pokemon = createJSONObjectFromString(s);
                 TextView textView = findViewById(R.id.text);
                 try {
-                    textView.setText((String)pokemon.get("name"));
+                    pokemonName = (String)pokemon.get("name");
+                    textView.setText(pokemonName);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -83,5 +85,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return obj;
+    }
+
+    public void showPokemon(View view) {
+        Intent intent = new Intent(this, ShowPokemon.class);
+        intent.putExtra("pokemonName", pokemonName);
+        startActivity(intent);
     }
 }

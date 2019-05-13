@@ -19,8 +19,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/seDetailbutton"
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@+id/inputTeamNameTextView"
         />
+
 
     <TextView
         android:id="@+id/teamDetailstextView"

@@ -17,12 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static android.widget.AbsListView.CHOICE_MODE_SINGLE;
+
 public class MyTeamsActivity extends AppCompatActivity {
     DBHandler dbhelper;
     private ArrayAdapter myAdapter;
     Map<String, List<String>> allTeams;
     List<String> MyTeamNames = new ArrayList<>();
     List<String> SelectedTeamDetails = new ArrayList<>();
+
 
     ArrayAdapter<String> myTeamsListViewAdapter = null;
     ArrayAdapter<String> TeamDetailsViewAdapter = null;
@@ -35,6 +38,7 @@ public class MyTeamsActivity extends AppCompatActivity {
             this.MyTeamNames.add(entry.getKey());
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -60,6 +64,7 @@ public class MyTeamsActivity extends AppCompatActivity {
                 (this, R.layout.activity_listview ,this.SelectedTeamDetails);
         teamdetailsView.setAdapter(this.TeamDetailsViewAdapter);
 
+        teamdetailsView.setChoiceMode(CHOICE_MODE_SINGLE);
         // Set an item click listener for ListView
         myTeamsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,14 +73,14 @@ public class MyTeamsActivity extends AppCompatActivity {
                 String selectedItem = (String) parent.getItemAtPosition(position);
 
                 // Display the selected item text on TextView
+
                 updateListViewTeamMembers(selectedItem);
                 TeamDetailsViewAdapter.notifyDataSetChanged();
-
-
             }
         });
 
     }
+
     protected void updateListViewTeamMembers(String selectedTeam){
         SelectedTeamDetails.clear();
         this.allTeams.clear();
@@ -98,6 +103,7 @@ public class MyTeamsActivity extends AppCompatActivity {
         }
 
     }
+
     public void OnClickButtons(View v)
     {
         switch (v.getId()) {
@@ -110,6 +116,7 @@ public class MyTeamsActivity extends AppCompatActivity {
                 startActivity(myIntent);
                 break;
             case R.id.removeFromTeamMembersbutton:
+
                 //Get selected team
                 ListView removemember_myTeamsListView = findViewById(R.id.myTeamsListView);
                 int pos = removemember_myTeamsListView.getCheckedItemPosition();
@@ -176,17 +183,20 @@ public class MyTeamsActivity extends AppCompatActivity {
                     Intent ShowPokemon = new Intent(this, ShowPokemon.class);
                     ShowPokemon.putExtra("selectedTeamName", choosedTeam);
                     startActivity(ShowPokemon);
+
                     break;
 
             default:
                 break;
         }
     }
+
     protected void removePokemonFromTeam(String selectedTeamName,String selectedPokemon){
         dbhelper.removePokemonFromTeam(selectedTeamName,selectedPokemon);
         updateListViewTeamMembers(selectedTeamName);
 
     }
+
     public List<String> getpokemonsOfTeam(String teamsName){
         List<String> teammembers =allTeams.get(teamsName);
         return teammembers;
@@ -205,6 +215,7 @@ public class MyTeamsActivity extends AppCompatActivity {
         alertDialogBuilder
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
 
                         String text = editText.getText().toString();
                         dbhelper.createNewEmptyTeam(text);
