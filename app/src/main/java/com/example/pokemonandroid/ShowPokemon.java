@@ -1,5 +1,6 @@
 package com.example.pokemonandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -25,6 +26,10 @@ public class ShowPokemon extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent Showpokemons = getIntent();
+        String SelecedTeamName = Showpokemons.getStringExtra("selectedTeamName");
+
+        //Do show pokemon details stuff here.
     }
 
 }
