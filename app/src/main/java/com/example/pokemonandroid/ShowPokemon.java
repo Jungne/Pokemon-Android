@@ -1,14 +1,19 @@
 package com.example.pokemonandroid;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,9 +28,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class ShowPokemon extends AppCompatActivity {
 
     ImageView imageView;
+    RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +42,7 @@ public class ShowPokemon extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.showPokemonToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        queue = Volley.newRequestQueue(this);
 
         try {
             JSONObject pokemonData = new JSONObject(getIntent().getStringExtra("pokemonData"));
@@ -43,7 +52,11 @@ public class ShowPokemon extends AppCompatActivity {
         }
         imageView = findViewById(R.id.showPokemonImageView);
 
-        setPokemonSprite(getIntent().getStringExtra("pokemonID"));
+        String pokemonID = getIntent().getStringExtra("pokemonID");
+
+        setPokemonSprite(pokemonID);
+
+        setEvolutionChain(pokemonID);
     }
 
     @Override
@@ -53,9 +66,19 @@ public class ShowPokemon extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addToTeamMenuItem:
+                addToTeam();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     //Retrieves the information for a pokemon using Volley.
     private void getPokemonSprite(String pokemonID) {
-        RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemonID + ".png";
 
         ImageRequest imageRequest = new ImageRequest
@@ -129,7 +152,123 @@ public class ShowPokemon extends AppCompatActivity {
         getPokemonSprite(pokemonID);
     }
 
-    public void addToTeam(View view) {
-        System.out.println("Added to team");
+    private void addToTeam() {
+        Context context = getApplicationContext();
+        CharSequence text = "Added to team!";
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
+    private void setEvolutionChain(String pokemonID) {
+        getEvolutionChainURL(pokemonID);
+    }
+
+    private void getEvolutionChainURL(String pokemonID) {
+        String url = "https://pokeapi.co/api/v2/pokemon-species/" + pokemonID;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String evolutionChainURL = response.getJSONObject("evolution_chain").getString("url");
+                            getEvolutionChain(evolutionChainURL);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
+    }
+
+    private void getEvolutionChain(String url) {
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            ArrayList evolutions = new ArrayList<String>();
+                            findEvolution(evolutions, response.getJSONObject("chain"));
+                            setEvolutionImageViews(evolutions);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
+    }
+
+    private void findEvolution(ArrayList<String> evolutions, JSONObject jsonObject) throws JSONException {
+        String url = jsonObject.getJSONObject("species").getString("url");
+        String[] splitURL = url.split("/");
+        System.out.println(url);
+        String pokemonID = splitURL[splitURL.length-1];
+        if (Integer.parseInt(pokemonID) <= 151) { //Only adds the 1st generation of pokémon.
+            evolutions.add(pokemonID);
+        }
+        JSONArray evolvesTo = jsonObject.getJSONArray("evolves_to");
+        if (!evolvesTo.isNull(0)) {
+            findEvolution(evolutions, evolvesTo.getJSONObject(0));
+        }
+    }
+
+    private void setEvolutionImageViews(ArrayList<String> evolutions) {
+        System.out.println(evolutions);
+        TextView evolutionTextView = findViewById(R.id.showPokemonEvolutionTextView);
+        if (evolutions.size() <= 1) {
+            evolutionTextView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        evolutionTextView.setVisibility(View.INVISIBLE);
+//        ArrayList imageViewsList = new ArrayList<ImageView>();
+        for (String pokemonID : evolutions) {
+            ImageView evolutionImageView = new ImageView(getApplicationContext());
+            evolutionImageView.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
+            evolutionImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            LinearLayout evolutionLayout = findViewById(R.id.evolutionLinearLayout);
+            evolutionLayout.addView(evolutionImageView);
+            addEvolutionImage(evolutionImageView, pokemonID);
+        }
+
+    }
+
+    private void addEvolutionImage(final ImageView evolutionImageView, String pokemonID) {
+        String url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemonID + ".png";
+
+        ImageRequest imageRequest = new ImageRequest
+                (url, new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        evolutionImageView.setImageBitmap(bitmap);
+                    }
+                }, 0, 0, null,
+                        new Response.ErrorListener() {
+                            public void onErrorResponse(VolleyError error) {
+                                imageView.setImageResource(R.mipmap.pokedroid);
+                            }
+                        });
+
+        queue.add(imageRequest);
     }
 }
