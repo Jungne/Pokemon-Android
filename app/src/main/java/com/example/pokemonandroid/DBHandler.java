@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,6 +24,7 @@ public class DBHandler extends SQLiteOpenHelper {
         @Override
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS team(\"nameOfTeam\" VARCHAR(200) PRIMARY KEY, \"nameOfPokemon1\" VARCHAR(200), \"nameOfPokemon2\" VARCHAR(200), \"nameOfPokemon3\" VARCHAR(200), \"nameOfPokemon4\" VARCHAR(200), \"nameOfPokemon5\" VARCHAR(200))");
+            sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS pokemons(\"nameOfPokemon\" VARCHAR(200) PRIMARY KEY, \"numberOfPokemon\" INTEGER)");
 
 
         }
@@ -119,6 +121,30 @@ public class DBHandler extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             db.execSQL("DELETE FROM team WHERE nameOfTeam='" + teamsName + "'");
             return true;
+        }
+        public boolean addAllPokemonsToDb(Map<Integer,String> mapOfPokemons){
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            for (Map.Entry<Integer, String> entry : mapOfPokemons.entrySet()) {
+                int pokemonsNumber = entry.getKey();
+                String pokemonsName =entry.getValue();
+                values.put("nameOfPokemon",pokemonsName);
+                values.put("numberOfPokemon",pokemonsNumber );
+            }
+            long newRowId = db.insert("team", null, values);
+            return true;
+        }
+        public Map<Integer,String> getAllPokemonsFromDb(){
+            SQLiteDatabase db = this.getReadableDatabase();
+            Map<Integer,String> allPokemons = new HashMap<Integer,String>();
+            Cursor myCursor =
+                    db.rawQuery("SELECT * FROM pokemons", null);
+            while(myCursor.moveToNext()) {
+                int numberOfPokemon = myCursor.getInt(1);
+                String nameOfPokemon = myCursor.getString(0);
+                allPokemons.put(numberOfPokemon,nameOfPokemon);
+            }
+            return allPokemons;
         }
 
     }
