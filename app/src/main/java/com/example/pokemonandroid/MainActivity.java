@@ -8,6 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,8 +27,9 @@ import utilities.NetworkUtils;
 public class MainActivity extends AppCompatActivity {
 
     Button testButton;
+    TextView textView;
     DBHandler dbhelper;
-    String pokemonName;
+    String pokemonID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final Button testButton = findViewById(R.id.randomPokemonButton);
+        textView = findViewById(R.id.text);
         testButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String pokeID = String.valueOf((int)(Math.random() * 151) + 1);
-                URL url = NetworkUtils.buildUrl(pokeID);
-                new PokeAPIQueryTask().execute(url);
+                pokemonID = String.valueOf((int)(Math.random() * 151) + 1);
+                textView.setText(pokemonID);
             }
         });
 
@@ -48,34 +56,34 @@ public class MainActivity extends AppCompatActivity {
         Intent myIntent = new Intent(this, MyTeamsActivity.class);
         startActivity(myIntent);
     }
-    public class PokeAPIQueryTask extends AsyncTask<URL, Void, String> {
-        @Override
-        protected String doInBackground(URL... urls) {
-            URL searchUrl = urls[0];
-            String pokeAPIQueryResults = null;
-
-            try {
-                pokeAPIQueryResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return pokeAPIQueryResults;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (s != null && !s.equals("")) {
-                JSONObject pokemon = createJSONObjectFromString(s);
-                TextView textView = findViewById(R.id.text);
-                try {
-                    pokemonName = (String)pokemon.get("name");
-                    textView.setText(pokemonName);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+//    public class PokeAPIQueryTask extends AsyncTask<URL, Void, String> {
+//        @Override
+//        protected String doInBackground(URL... urls) {
+//            URL searchUrl = urls[0];
+//            String pokeAPIQueryResults = null;
+//
+//            try {
+//                pokeAPIQueryResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return pokeAPIQueryResults;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+//            if (s != null && !s.equals("")) {
+//                JSONObject pokemon = createJSONObjectFromString(s);
+//                TextView textView = findViewById(R.id.text);
+//                try {
+//                    pokemonName = (String)pokemon.get("name");
+//                    textView.setText(pokemonName);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
     private JSONObject createJSONObjectFromString(String s) {
         JSONObject obj = null;
@@ -87,9 +95,38 @@ public class MainActivity extends AppCompatActivity {
         return obj;
     }
 
-    public void showPokemon(View view) {
+    //Retrieves the information for a pokemon using Volley.
+    private void getPokemonDataAndShow(String pokemonID) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                            showPokemon(response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
+    }
+
+    public void showPokemonButtonHandler(View view) {
+        getPokemonDataAndShow(textView.getText().toString());
+    }
+
+    private void showPokemon(JSONObject jsonObject) {
         Intent intent = new Intent(this, ShowPokemon.class);
-        intent.putExtra("pokemonName", pokemonName);
+        intent.putExtra("pokemonID", pokemonID);
+        intent.putExtra("pokemonData", jsonObject.toString());
         startActivity(intent);
     }
 }
