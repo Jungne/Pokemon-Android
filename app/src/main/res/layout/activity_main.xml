@@ -29,15 +29,15 @@
             android:text="Random Pokémon" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/showPokemonButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="showPokemon"
+            android:onClick="showPokemonButtonHandler"
             android:text="Show Pokémon" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/showPokemonButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="gotoMyTeams"
