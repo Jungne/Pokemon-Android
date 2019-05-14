@@ -1,5 +1,7 @@
 package com.example.pokemonandroid;
 
+
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +36,10 @@ public class ShowPokemon extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.showPokemonToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent Showpokemons = getIntent();
+        String SelecedTeamName = Showpokemons.getStringExtra("selectedTeamName");
+
+        //Do show pokemon details stuff here.
 
         try {
             JSONObject pokemonData = new JSONObject(getIntent().getStringExtra("pokemonData"));

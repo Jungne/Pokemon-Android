@@ -46,6 +46,19 @@ public class DBHandler extends SQLiteOpenHelper {
             long newRowId = db.insert("team", null, values);
             return true;
         }
+        public boolean removePokemonFromTeam(String nameOfTheTeam, String nameOfPokemon){
+            SQLiteDatabase db = this.getWritableDatabase();
+            List<String> pokemons =this.getTeamByName(nameOfTheTeam);
+            for(String pokemonsName:pokemons){
+                if(pokemonsName.equals(nameOfPokemon)){
+                    int indexOfPokemon =pokemons.indexOf(pokemonsName);
+                    db.execSQL("UPDATE team SET nameOfPokemon" + (indexOfPokemon+1) + "=" + null + " WHERE nameOfTeam='" + nameOfTheTeam + "'");
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
         public List<String> getTeamByName(String nameOfTheTeam){
             SQLiteDatabase db = this.getReadableDatabase();
             List<String> myteam = new ArrayList<String>();
@@ -82,21 +95,30 @@ public class DBHandler extends SQLiteOpenHelper {
             }
             return mapOfteams;
         }
-        public boolean createNewEmptyTeam(String teamName){
+        public boolean createNewEmptyTeam(String teamName) {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("nameOfTeam",teamName );
+            values.put("nameOfTeam", teamName);
             // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert("team", null, values);
             return true;
         }
         public boolean addNewPokemonToExistingTeam(String pokemonsName, String TeamsName){
+            SQLiteDatabase db = this.getWritableDatabase();
             List<String> existingPokemonsInTeam =getTeamByName(TeamsName);
             existingPokemonsInTeam.add(pokemonsName);
-            for(String s :existingPokemonsInTeam){
-
+            if(existingPokemonsInTeam.size()<=5) {
+                for (String s : existingPokemonsInTeam) {
+                    db.execSQL("UPDATE team SET nameOfPokemon" + existingPokemonsInTeam.size() + "=" + pokemonsName + " WHERE nameOfTeam='" + TeamsName + "'");
+                return true;
+                }
             }
             return false;
+        }
+        public boolean removeTeamFromDb(String teamsName){
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.execSQL("DELETE FROM team WHERE nameOfTeam='" + teamsName + "'");
+            return true;
         }
 
     }
