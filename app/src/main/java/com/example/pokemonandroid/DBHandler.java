@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,6 +24,7 @@ public class DBHandler extends SQLiteOpenHelper {
         @Override
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS team(\"nameOfTeam\" VARCHAR(200) PRIMARY KEY, \"nameOfPokemon1\" VARCHAR(200), \"nameOfPokemon2\" VARCHAR(200), \"nameOfPokemon3\" VARCHAR(200), \"nameOfPokemon4\" VARCHAR(200), \"nameOfPokemon5\" VARCHAR(200))");
+            sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS pokemons(\"nameOfPokemon\" VARCHAR(200) PRIMARY KEY, \"numberOfPokemon\" INTEGER)");
 
 
         }
@@ -45,6 +47,19 @@ public class DBHandler extends SQLiteOpenHelper {
             // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert("team", null, values);
             return true;
+        }
+        public boolean removePokemonFromTeam(String nameOfTheTeam, String nameOfPokemon){
+            SQLiteDatabase db = this.getWritableDatabase();
+            List<String> pokemons =this.getTeamByName(nameOfTheTeam);
+            for(String pokemonsName:pokemons){
+                if(pokemonsName.equals(nameOfPokemon)){
+                    int indexOfPokemon =pokemons.indexOf(pokemonsName);
+                    db.execSQL("UPDATE team SET nameOfPokemon" + (indexOfPokemon+1) + "=" + null + " WHERE nameOfTeam='" + nameOfTheTeam + "'");
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
         public List<String> getTeamByName(String nameOfTheTeam){
             SQLiteDatabase db = this.getReadableDatabase();
@@ -82,21 +97,54 @@ public class DBHandler extends SQLiteOpenHelper {
             }
             return mapOfteams;
         }
-        public boolean createNewEmptyTeam(String teamName){
+        public boolean createNewEmptyTeam(String teamName) {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("nameOfTeam",teamName );
+            values.put("nameOfTeam", teamName);
             // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert("team", null, values);
             return true;
         }
         public boolean addNewPokemonToExistingTeam(String pokemonsName, String TeamsName){
+            SQLiteDatabase db = this.getWritableDatabase();
             List<String> existingPokemonsInTeam =getTeamByName(TeamsName);
             existingPokemonsInTeam.add(pokemonsName);
-            for(String s :existingPokemonsInTeam){
-
+            if(existingPokemonsInTeam.size()<=5) {
+                for (String s : existingPokemonsInTeam) {
+                    db.execSQL("UPDATE team SET nameOfPokemon" + existingPokemonsInTeam.size() + "=" + pokemonsName + " WHERE nameOfTeam='" + TeamsName + "'");
+                return true;
+                }
             }
             return false;
+        }
+        public boolean removeTeamFromDb(String teamsName){
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.execSQL("DELETE FROM team WHERE nameOfTeam='" + teamsName + "'");
+            return true;
+        }
+        public boolean addAllPokemonsToDb(Map<Integer,String> mapOfPokemons){
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            for (Map.Entry<Integer, String> entry : mapOfPokemons.entrySet()) {
+                int pokemonsNumber = entry.getKey();
+                String pokemonsName =entry.getValue();
+                values.put("nameOfPokemon",pokemonsName);
+                values.put("numberOfPokemon",pokemonsNumber );
+            }
+            long newRowId = db.insert("team", null, values);
+            return true;
+        }
+        public Map<Integer,String> getAllPokemonsFromDb(){
+            SQLiteDatabase db = this.getReadableDatabase();
+            Map<Integer,String> allPokemons = new HashMap<Integer,String>();
+            Cursor myCursor =
+                    db.rawQuery("SELECT * FROM pokemons", null);
+            while(myCursor.moveToNext()) {
+                int numberOfPokemon = myCursor.getInt(1);
+                String nameOfPokemon = myCursor.getString(0);
+                allPokemons.put(numberOfPokemon,nameOfPokemon);
+            }
+            return allPokemons;
         }
 
     }

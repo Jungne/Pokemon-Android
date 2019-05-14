@@ -43,6 +43,10 @@ public class ShowPokemon extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         queue = Volley.newRequestQueue(this);
+        Intent Showpokemons = getIntent();
+        String SelecedTeamName = Showpokemons.getStringExtra("selectedTeamName");
+
+        //Do show pokemon details stuff here.
 
         try {
             JSONObject pokemonData = new JSONObject(getIntent().getStringExtra("pokemonData"));
