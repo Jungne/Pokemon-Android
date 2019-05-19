@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/addToTeamMenuItem"
+        android:onClick="addPokemonToTeam"
         android:title="Add to team"
         app:showAsAction="ifRoom" />
 </menu>

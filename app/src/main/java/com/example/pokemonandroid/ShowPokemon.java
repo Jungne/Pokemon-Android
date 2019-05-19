@@ -1,17 +1,23 @@
 package com.example.pokemonandroid;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,14 +35,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ShowPokemon extends AppCompatActivity {
 
     ImageView imageView;
     RequestQueue queue;
+    DBHandler dbhelper;
+    ArrayAdapter<String> TeamsListViewAdapter = null;
+    Map<String, List<String>> allTeams = null;
+    List<String> MyTeamNames = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.dbhelper = new DBHandler(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_pokemon);
         Toolbar toolbar = findViewById(R.id.showPokemonToolbar);
@@ -61,8 +74,19 @@ public class ShowPokemon extends AppCompatActivity {
         setPokemonSprite(pokemonID);
 
         setEvolutionChain(pokemonID);
-    }
+        updateMyTeamsListView();
 
+    }
+    protected void updateMyTeamsListView(){
+        if(allTeams != null) {
+            this.allTeams.clear();
+        }
+        this.MyTeamNames.clear();
+        this.allTeams =dbhelper.getAllTeams();
+        for (Map.Entry<String, List<String>> entry : this.allTeams.entrySet()) {
+            this.MyTeamNames.add(entry.getKey());
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -274,5 +298,57 @@ public class ShowPokemon extends AppCompatActivity {
                         });
 
         queue.add(imageRequest);
+    }
+    /*public boolean addPokemonToTeam(View view)
+    {
+        //Show teams dialog.
+        selectTeamToAddToDialog();
+        return true;
+    }*/
+    public boolean addPokemonToTeam(MenuItem item) {
+        selectTeamToAddToDialog();
+        return true;
+    }
+        protected void selectTeamToAddToDialog() {
+
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(ShowPokemon.this);
+        final View promptView = layoutInflater.inflate(R.layout.dialog_show_pokemon_select_team, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ShowPokemon.this);
+        alertDialogBuilder.setView(promptView);
+
+        ListView myTeams = (ListView) promptView.findViewById(R.id.listviewSelectTeamShowPokemonDialog);
+
+        TeamsListViewAdapter =  new ArrayAdapter<String>
+                (this, R.layout.activity_listview ,this.MyTeamNames);
+            myTeams.setAdapter(TeamsListViewAdapter);
+            TeamsListViewAdapter.notifyDataSetChanged();
+        // setup a dialog window
+        alertDialogBuilder
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ListView myTeams = (ListView) promptView.findViewById(R.id.listviewSelectTeamShowPokemonDialog);
+                        int pos = myTeams.getCheckedItemPosition();
+                        String selectedTeamName  = (String) myTeams.getAdapter().getItem(pos);
+                        String pokemonsName = getIntent().getStringExtra("pokemonID");
+                        dbhelper.addNewPokemonToExistingTeam(pokemonsName,selectedTeamName);
+                        dialog.cancel();
+                        Context context = getApplicationContext();
+                        CharSequence text = "Added to team!";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 }

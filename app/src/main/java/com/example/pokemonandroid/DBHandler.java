@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,10 +109,11 @@ public class DBHandler extends SQLiteOpenHelper {
         public boolean addNewPokemonToExistingTeam(String pokemonsName, String TeamsName){
             SQLiteDatabase db = this.getWritableDatabase();
             List<String> existingPokemonsInTeam =getTeamByName(TeamsName);
+            existingPokemonsInTeam.removeAll(Collections.singleton(null));
             existingPokemonsInTeam.add(pokemonsName);
             if(existingPokemonsInTeam.size()<=5) {
                 for (String s : existingPokemonsInTeam) {
-                    db.execSQL("UPDATE team SET nameOfPokemon" + existingPokemonsInTeam.size() + "=" + pokemonsName + " WHERE nameOfTeam='" + TeamsName + "'");
+                    db.execSQL("UPDATE team SET nameOfPokemon" + existingPokemonsInTeam.size() + "='" + pokemonsName + "' WHERE nameOfTeam='" + TeamsName + "'");
                 return true;
                 }
             }
