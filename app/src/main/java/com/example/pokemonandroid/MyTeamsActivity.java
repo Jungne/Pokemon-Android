@@ -127,7 +127,7 @@ public class MyTeamsActivity extends AppCompatActivity {
             ListView removemember_teamdetails = findViewById(R.id.teamdetails);
             int pos2 = removemember_teamdetails.getCheckedItemPosition();
             String selectedPokemon = (String) removemember_teamdetails.getAdapter().getItem(pos2);
-            selectedPokemon = StringUtils.lowerCase(selectedPokemon);
+            //selectedPokemon = StringUtils.lowerCase(selectedPokemon);
 
             List<String> pokelist = allTeams.get(selectedTeamName);
 

@@ -53,12 +53,12 @@ public class DBHandler extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             List<String> pokemons = this.getTeamByName(nameOfTheTeam);
             for(String pokemonsName:pokemons){
-                if(pokemonsName.equals(nameOfPokemon)){
+                if(pokemonsName != null && pokemonsName.equals(nameOfPokemon)){
                     int indexOfPokemon =pokemons.indexOf(pokemonsName);
                     db.execSQL("UPDATE team SET nameOfPokemon" + (indexOfPokemon+1) + "=" + null + " WHERE nameOfTeam='" + nameOfTheTeam + "'");
                     return true;
                 }
-                return false;
+                //return false;
             }
             return false;
         }
