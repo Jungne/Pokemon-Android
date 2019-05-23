@@ -13,47 +13,13 @@
         android:layout_marginEnd="16dp"
         android:onClick="gotoMyTeams"
         android:text="My Teams"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="362dp"
-        android:layout_height="245dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="I show the random Pokemon" />
-
-        <Button
-            android:id="@+id/randomPokemonButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Random Pokémon" />
-
-        <Button
-            android:id="@+id/showPokemonButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="showPokemonButtonHandler"
-            android:text="Show Pokémon" />
-
-    </LinearLayout>
+        tools:layout_editor_absoluteY="4dp" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="344dp"
-        android:layout_height="301dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -63,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.636"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ListView
             android:id="@+id/listViewAllPokemons"

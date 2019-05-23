@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +31,6 @@ import utilities.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button testButton;
     TextView textView;
     DBHandler dbhelper;
     String pokemonID;
@@ -45,14 +45,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button testButton = findViewById(R.id.randomPokemonButton);
-        textView = findViewById(R.id.text);
-        testButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                pokemonID = String.valueOf((int)(Math.random() * 151) + 1);
-                textView.setText(pokemonID);
-            }
-        });
         ListView listViewAllPokemons = findViewById(R.id.listViewAllPokemons);
         this.ListViewAdapterAllPokemons =  new ArrayAdapter<String>
                 (this, R.layout.activity_listview ,this.allPokemons);
@@ -93,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                 // Get current json object
                 JSONObject pokemon = array.getJSONObject(i);
                 String pokemonName = pokemon.getString("name");
+                pokemonName = StringUtils.capitalize(pokemonName);
+                pokemonName = pokemonName.replace('-', ' ');
                 allPokemons.add(pokemonName);
             }
             ListViewAdapterAllPokemons.notifyDataSetChanged();
@@ -106,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         int pos = pokemonsListView.getCheckedItemPosition();
         String selectedPokemonName  = (String) pokemonsListView.getAdapter().getItem(pos);
         pokemonID = selectedPokemonName;
-        getPokemonDataAndShow(selectedPokemonName);
+        getPokemonDataAndShow(StringUtils.lowerCase(selectedPokemonName));
     }
     public void gotoMyTeams(View view)
     {
@@ -150,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showPokemonButtonHandler(View view) {
-        getPokemonDataAndShow(textView.getText().toString());
+        getPokemonDataAndShow(StringUtils.lowerCase(textView.getText().toString()));
     }
 
     private void showPokemon(JSONObject jsonObject) {

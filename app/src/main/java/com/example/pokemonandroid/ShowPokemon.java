@@ -47,6 +47,8 @@ public class ShowPokemon extends AppCompatActivity {
     Map<String, List<String>> allTeams = null;
     List<String> MyTeamNames = new ArrayList<>();
     List<String> movesList;
+    String pokemonID;
+    String pokemonName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +75,6 @@ public class ShowPokemon extends AppCompatActivity {
             e.printStackTrace();
         }
         imageView = findViewById(R.id.showPokemonImageView);
-
-        String pokemonID = getIntent().getStringExtra("pokemonID");
 
         setPokemonSprite(pokemonID);
 
@@ -181,6 +181,8 @@ public class ShowPokemon extends AppCompatActivity {
         attackTextView.setText(attack);
         hpTextView.setText(hp);
 
+        pokemonID = number;
+        pokemonName = name;
         setMoves(data.getJSONArray("moves"));
     }
 
@@ -339,8 +341,7 @@ public class ShowPokemon extends AppCompatActivity {
                         ListView myTeams = (ListView) promptView.findViewById(R.id.listviewSelectTeamShowPokemonDialog);
                         int pos = myTeams.getCheckedItemPosition();
                         String selectedTeamName  = (String) myTeams.getAdapter().getItem(pos);
-                        String pokemonsName = getIntent().getStringExtra("pokemonID");
-                        dbhelper.addNewPokemonToExistingTeam(pokemonsName,selectedTeamName);
+                        dbhelper.addNewPokemonToExistingTeam(pokemonName, selectedTeamName);
                         dialog.cancel();
                         Context context = getApplicationContext();
                         CharSequence text = "Added to team!";

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -56,6 +58,11 @@ public class MyTeamsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_teams);
+
+        Toolbar toolbar = findViewById(R.id.myTeamsToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         ListView myTeamsListView = findViewById(R.id.myTeamsListView);
         ListView teamdetailsView = findViewById(R.id.teamdetails);
@@ -111,45 +118,51 @@ public class MyTeamsActivity extends AppCompatActivity {
         if (v.getId() == R.id.addNewTeambutton) {
             TextView inputTeamNameTextView = (TextView) findViewById(R.id.inputTeamNameTextView);
             addNewTeambuttonDialog();
-        } else if (v.getId() == R.id.BackToMainbutton) {
-            Intent myIntent = new Intent(this, MainActivity.class);
-            startActivity(myIntent);
         } else if (v.getId() == R.id.removeFromTeamMembersbutton) {
             // Get selected team
             ListView removemember_myTeamsListView = findViewById(R.id.myTeamsListView);
-            int pos = removemember_myTeamsListView.getCheckedItemPosition();
-            String selectedTeamName = (String) removemember_myTeamsListView.getAdapter().getItem(pos);
+            int pos1 = removemember_myTeamsListView.getCheckedItemPosition();
+            String selectedTeamName = (String) removemember_myTeamsListView.getAdapter().getItem(pos1);
             // Get selected pokemon
             ListView removemember_teamdetails = findViewById(R.id.teamdetails);
-            pos = removemember_teamdetails.getCheckedItemPosition();
-            String selectedPokemon = (String) removemember_teamdetails.getAdapter().getItem(pos);
+            int pos2 = removemember_teamdetails.getCheckedItemPosition();
+            String selectedPokemon = (String) removemember_teamdetails.getAdapter().getItem(pos2);
+            selectedPokemon = StringUtils.lowerCase(selectedPokemon);
 
-            for (Map.Entry<String, List<String>> entry : allTeams.entrySet()) {
+            List<String> pokelist = allTeams.get(selectedTeamName);
 
-                if (entry.getKey().equals(selectedTeamName)) {
-                    List<String> pokelist = entry.getValue();
-                    Boolean remove = false;
-                    for (String pokemon : pokelist) {
-                        if (pokemon.equals(selectedPokemon)) {
-                            if (pokemon.equals(selectedPokemon)) {
-                                remove = true;
-                                break;
-
-                            } else if (pokemon == null || pokemon.equals("")) {
-                                break;
-                            }
-
-                        }
-
-                    }
-                    if (remove == true) {
-                        pokelist.remove(selectedPokemon);
-                        removePokemonFromTeam(selectedTeamName, selectedPokemon);
-
-                    }
-                    entry.setValue(pokelist);
-                }
+            if (pokelist.contains(selectedPokemon)) {
+                pokelist.remove(selectedPokemon);
+                removePokemonFromTeam(selectedTeamName, selectedPokemon);
+                allTeams.put(selectedTeamName, pokelist);
             }
+
+//            for (Map.Entry<String, List<String>> entry : allTeams.entrySet()) {
+//
+//                if (entry.getKey().equals(selectedTeamName)) {
+//                    List<String> pokelist = entry.getValue();
+//                    Boolean remove = false;
+//                    for (String pokemon : pokelist) {
+//                        if (pokemon.equals(selectedPokemon)) {
+//                            if (pokemon.equals(selectedPokemon)) {
+//                                remove = true;
+//                                break;
+//
+//                            } else if (pokemon == null || pokemon.equals("")) {
+//                                break;
+//                            }
+//
+//                        }
+//
+//                    }
+//                    if (remove == true) {
+//                        pokelist.remove(selectedPokemon);
+//                        removePokemonFromTeam(selectedTeamName, selectedPokemon);
+//
+//                    }
+//                    entry.setValue(pokelist);
+//                }
+//            }
             SelectedTeamDetails.remove(selectedPokemon);
             removemember_teamdetails.setSelection(-1);
             TeamDetailsViewAdapter.notifyDataSetChanged();
@@ -179,7 +192,7 @@ public class MyTeamsActivity extends AppCompatActivity {
             myselectedPokemon = (String) myteamdetails.getAdapter().getItem(pos1);
             Intent ShowPokemon = new Intent(this, ShowPokemon.class);
             ShowPokemon.putExtra("selectedTeamName", choosedTeam);
-            getPokemonDataAndShow(myselectedPokemon);
+            getPokemonDataAndShow(StringUtils.lowerCase(myselectedPokemon));
         }
     }
 

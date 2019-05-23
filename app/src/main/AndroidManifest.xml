@@ -11,7 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MyTeamsActivity" />
+        <activity
+            android:name=".MyTeamsActivity"
+            android:label="@string/title_activity_show_pokemon"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pokemonandroid.MainActivity" />
+        </activity>
         <activity
             android:name=".ShowPokemon"
             android:label="@string/title_activity_show_pokemon"

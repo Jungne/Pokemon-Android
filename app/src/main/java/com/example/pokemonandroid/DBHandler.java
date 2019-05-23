@@ -51,7 +51,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         public boolean removePokemonFromTeam(String nameOfTheTeam, String nameOfPokemon){
             SQLiteDatabase db = this.getWritableDatabase();
-            List<String> pokemons =this.getTeamByName(nameOfTheTeam);
+            List<String> pokemons = this.getTeamByName(nameOfTheTeam);
             for(String pokemonsName:pokemons){
                 if(pokemonsName.equals(nameOfPokemon)){
                     int indexOfPokemon =pokemons.indexOf(pokemonsName);
