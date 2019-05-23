@@ -13,6 +13,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +32,7 @@ public class MyTeamsActivity extends AppCompatActivity {
     DBHandler dbhelper;
     private ArrayAdapter myAdapter;
     Map<String, List<String>> allTeams;
+    String pokemonID;
     List<String> MyTeamNames = new ArrayList<>();
     List<String> SelectedTeamDetails = new ArrayList<>();
 
@@ -92,7 +102,7 @@ public class MyTeamsActivity extends AppCompatActivity {
             {
                 for(String pokemon : entry.getValue())
                 {
-                    if(pokemon != null && !SelectedTeamDetails.contains(pokemon)){
+                    if(pokemon != null /*&& !SelectedTeamDetails.contains(pokemon)*/){
                         SelectedTeamDetails.add(pokemon);
                     }
                     else{
@@ -138,7 +148,11 @@ public class MyTeamsActivity extends AppCompatActivity {
                             if(pokemon.equals(selectedPokemon))
                             {
                                 remove = true;
+                                break;
 
+                            }
+                            else if(pokemon==null || pokemon.equals("")){
+                                break;
                             }
 
                         }
@@ -178,17 +192,48 @@ public class MyTeamsActivity extends AppCompatActivity {
                     int pos1 = myTeamsListView.getCheckedItemPosition();
                     String choosedTeam  = (String) myTeamsListView.getAdapter().getItem(pos1);
 
-
                     //Goto pokemon info view.
-                    Intent ShowPokemon = new Intent(this, ShowPokemon.class);
+                    ListView myteamdetails = findViewById(R.id.teamdetails);
+                    pos = myteamdetails.getCheckedItemPosition();
+                    String myselectedPokemon;
+                myselectedPokemon = (String) myteamdetails.getAdapter().getItem(pos);
+                Intent ShowPokemon = new Intent(this, ShowPokemon.class);
                     ShowPokemon.putExtra("selectedTeamName", choosedTeam);
-                    startActivity(ShowPokemon);
+                    getPokemonDataAndShow(myselectedPokemon);
 
                     break;
 
             default:
                 break;
         }
+    }
+    private void getPokemonDataAndShow(String pokemonID) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        showPokemon(response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
+    }
+    private void showPokemon(JSONObject jsonObject) {
+        Intent intent = new Intent(this, ShowPokemon.class);
+        intent.putExtra("pokemonID", pokemonID);
+        intent.putExtra("pokemonData", jsonObject.toString());
+        startActivity(intent);
     }
 
     protected void removePokemonFromTeam(String selectedTeamName,String selectedPokemon){
