@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">PokemonAndroid</string>
     <string name="title_activity_show_pokemon">ShowPokemon</string>
+    <string name="title_activity_my_teams">My teams</string>
 </resources>

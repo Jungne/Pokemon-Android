@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MyTeamsActivity"
-            android:label="@string/title_activity_show_pokemon"
+            android:label="@string/title_activity_my_teams"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
