@@ -46,6 +46,7 @@ public class ShowPokemon extends AppCompatActivity {
     ArrayAdapter<String> TeamsListViewAdapter = null;
     Map<String, List<String>> allTeams = null;
     List<String> MyTeamNames = new ArrayList<>();
+    List<String> movesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,10 @@ public class ShowPokemon extends AppCompatActivity {
         String SelecedTeamName = Showpokemons.getStringExtra("selectedTeamName");
 
         //Do show pokemon details stuff here.
+        movesList = new ArrayList<>();
+        ArrayAdapter<String> movesAdapter = new ArrayAdapter<>(this, R.layout.activity_listview, movesList);
+        ListView movesListView = findViewById(R.id.showPokemonMovesListView);
+        movesListView.setAdapter(movesAdapter);
 
         try {
             JSONObject pokemonData = new JSONObject(getIntent().getStringExtra("pokemonData"));
@@ -75,8 +80,8 @@ public class ShowPokemon extends AppCompatActivity {
 
         setEvolutionChain(pokemonID);
         updateMyTeamsListView();
-
     }
+
     protected void updateMyTeamsListView(){
         if(allTeams != null) {
             this.allTeams.clear();
@@ -87,6 +92,7 @@ public class ShowPokemon extends AppCompatActivity {
             this.MyTeamNames.add(entry.getKey());
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -174,6 +180,8 @@ public class ShowPokemon extends AppCompatActivity {
         defenseTextView.setText(defense);
         attackTextView.setText(attack);
         hpTextView.setText(hp);
+
+        setMoves(data.getJSONArray("moves"));
     }
 
     private void setPokemonSprite(String pokemonID) {
@@ -309,7 +317,8 @@ public class ShowPokemon extends AppCompatActivity {
         selectTeamToAddToDialog();
         return true;
     }
-        protected void selectTeamToAddToDialog() {
+
+    protected void selectTeamToAddToDialog() {
 
         // get prompts.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(ShowPokemon.this);
@@ -350,5 +359,18 @@ public class ShowPokemon extends AppCompatActivity {
         // create an alert dialog
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+    }
+
+    private void setMoves(JSONArray movesJSONArray) throws JSONException {
+        movesList.clear();
+
+        for (int i = 0; i < movesJSONArray.length(); i++) {
+            String moveName = movesJSONArray.getJSONObject(i).getJSONObject("move").getString("name");
+            moveName = StringUtils.capitalize(moveName);
+            moveName = moveName.replace('-', ' ');
+
+            movesList.add(moveName);
+        }
+
     }
 }
