@@ -174,9 +174,9 @@ public class MyTeamsActivity extends AppCompatActivity {
 
             // Goto pokemon info view.
             ListView myteamdetails = findViewById(R.id.teamdetails);
-            pos = myteamdetails.getCheckedItemPosition();
+            pos1 = myteamdetails.getCheckedItemPosition();
             String myselectedPokemon;
-            myselectedPokemon = (String) myteamdetails.getAdapter().getItem(pos);
+            myselectedPokemon = (String) myteamdetails.getAdapter().getItem(pos1);
             Intent ShowPokemon = new Intent(this, ShowPokemon.class);
             ShowPokemon.putExtra("selectedTeamName", choosedTeam);
             getPokemonDataAndShow(myselectedPokemon);
