@@ -34,8 +34,7 @@
         app:layout_constraintEnd_toStartOf="@+id/seDetailbutton"
         app:layout_constraintStart_toStartOf="parent"
 
-        app:layout_constraintTop_toBottomOf="@+id/inputTeamNameTextView"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/inputTeamNameTextView" />
 
 
     <TextView
@@ -84,9 +83,9 @@
         android:layout_width="0dp"
         android:layout_height="246dp"
         android:layout_marginStart="36dp"
-        android:visibility="visible"
         android:choiceMode="singleChoice"
         android:listSelector="@android:color/darker_gray"
+        android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/addNewTeambutton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/myTeamstextView" />
@@ -106,10 +105,9 @@
         android:id="@+id/removeTeambutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="1dp"
         android:onClick="OnClickButtons"
         android:text="Remove Team"
-        app:layout_constraintEnd_toEndOf="@+id/addNewTeambutton"
+        app:layout_constraintStart_toStartOf="@id/addNewTeambutton"
         app:layout_constraintTop_toBottomOf="@+id/addNewTeambutton" />
 
     <TextView
@@ -123,6 +121,14 @@
         app:layout_constraintBottom_toTopOf="@+id/teamdetails"
         app:layout_constraintEnd_toEndOf="@+id/myTeamsListView"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/checkWeaknessButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check weaknesses"
+        app:layout_constraintStart_toStartOf="@id/removeTeambutton"
+        app:layout_constraintTop_toBottomOf="@id/removeTeambutton" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -44,6 +44,7 @@ public class ShowPokemon extends AppCompatActivity {
     RequestQueue queue;
     DBHandler dbhelper;
     ArrayAdapter<String> TeamsListViewAdapter = null;
+    ArrayAdapter<String> movesAdapter = null;
     Map<String, List<String>> allTeams = null;
     List<String> MyTeamNames = new ArrayList<>();
     List<String> movesList;
@@ -59,24 +60,19 @@ public class ShowPokemon extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         queue = Volley.newRequestQueue(this);
-        Intent Showpokemons = getIntent();
-        String SelecedTeamName = Showpokemons.getStringExtra("selectedTeamName");
+        Intent showpokemons = getIntent();
+        String SelecedTeamName = showpokemons.getStringExtra("selectedTeamName");
 
         //Do show pokemon details stuff here.
         movesList = new ArrayList<>();
-        ArrayAdapter<String> movesAdapter = new ArrayAdapter<>(this, R.layout.activity_listview, movesList);
+        movesAdapter = new ArrayAdapter<>(this, R.layout.activity_listview, movesList);
         ListView movesListView = findViewById(R.id.showPokemonMovesListView);
         movesListView.setAdapter(movesAdapter);
 
-        try {
-            JSONObject pokemonData = new JSONObject(getIntent().getStringExtra("pokemonData"));
-            setPokemonData(pokemonData);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        imageView = findViewById(R.id.showPokemonImageView);
+        pokemonID = getIntent().getStringExtra("pokemonID");
+        getPokemonData(pokemonID);
 
-        setPokemonSprite(pokemonID);
+        imageView = findViewById(R.id.showPokemonImageView);
 
         setEvolutionChain(pokemonID);
         updateMyTeamsListView();
@@ -111,7 +107,34 @@ public class ShowPokemon extends AppCompatActivity {
         }
     }
 
-    //Retrieves the information for a pokemon using Volley.
+    //Retrieves the information for a pokemon using volley
+    private void getPokemonData(final String pokemonID) {
+        String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            setPokemonData(response);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("something went wrong");
+
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
+    }
+
+    //Retrieves the sprite for a pokemon using Volley.
     private void getPokemonSprite(String pokemonID) {
         String url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemonID + ".png";
 
@@ -143,6 +166,18 @@ public class ShowPokemon extends AppCompatActivity {
         if (types.optJSONObject(1) != null) {
             type2 = types.optJSONObject(1).getJSONObject("type").getString("name");
         }
+        JSONArray abilitiesArray = data.getJSONArray("abilities");
+        String abilities = StringUtils.capitalize(data.getJSONArray("abilities").getJSONObject(0).getJSONObject("ability").getString("name"));
+        for (int i = 1; i < abilitiesArray.length(); i++) {
+            String ability = abilitiesArray.getJSONObject(i).getJSONObject("ability").getString("name");
+            ability = StringUtils.capitalize(ability);
+            if (i == abilitiesArray.length() - 1) {
+                abilities += " or " + ability;
+            } else {
+                abilities += ", " + ability;
+            }
+        }
+        abilities = abilities.replace("-", " ");
         JSONArray stats = data.getJSONArray("stats");
         String speed = stats.getJSONObject(0).getString("base_stat");
         String spDef = stats.getJSONObject(1).getString("base_stat");
@@ -156,6 +191,7 @@ public class ShowPokemon extends AppCompatActivity {
         TextView heightTextView = findViewById(R.id.showPokemonHeightTextView);
         TextView weightTextView = findViewById(R.id.showPokemonWeightTextView);
         TextView typeTextView = findViewById(R.id.showPokemonTypeTextView);
+        TextView abilitiesTextView = findViewById(R.id.showPokemonAbilitiesTextView);
         TextView speedTextView = findViewById(R.id.showPokemonSpeedTextView);
         TextView spDefTextView = findViewById(R.id.showPokemonSpDefTextView);
         TextView spAtkTextView = findViewById(R.id.showPokemonSpAtkTextView);
@@ -174,6 +210,7 @@ public class ShowPokemon extends AppCompatActivity {
         } else {
             typeTextView.setText(type1 + " & " + type2);
         }
+        abilitiesTextView.setText(abilities);
         speedTextView.setText(speed);
         spDefTextView.setText(spDef);
         spAtkTextView.setText(spAtk);
@@ -183,7 +220,9 @@ public class ShowPokemon extends AppCompatActivity {
 
         pokemonID = number;
         pokemonName = name;
-        setMoves(data.getJSONArray("moves"));
+        JSONArray movesArray = data.getJSONArray("moves");
+        setMoves(movesArray);
+        setPokemonSprite(pokemonID);
     }
 
     private void setPokemonSprite(String pokemonID) {
@@ -259,11 +298,11 @@ public class ShowPokemon extends AppCompatActivity {
     private void findEvolution(ArrayList<String> evolutions, JSONObject jsonObject) throws JSONException {
         String url = jsonObject.getJSONObject("species").getString("url");
         String[] splitURL = url.split("/");
-        System.out.println(url);
         String pokemonID = splitURL[splitURL.length-1];
-        if (Integer.parseInt(pokemonID) <= 151) { //Only adds the 1st generation of pokémon.
-            evolutions.add(pokemonID);
-        }
+        evolutions.add(pokemonID);
+//        if (Integer.parseInt(pokemonID) <= 151) { //Only adds the 1st generation of pokémon.
+//            evolutions.add(pokemonID);
+//        }
         JSONArray evolvesTo = jsonObject.getJSONArray("evolves_to");
         if (!evolvesTo.isNull(0)) {
             findEvolution(evolutions, evolvesTo.getJSONObject(0));
@@ -271,7 +310,6 @@ public class ShowPokemon extends AppCompatActivity {
     }
 
     private void setEvolutionImageViews(ArrayList<String> evolutions) {
-        System.out.println(evolutions);
         TextView evolutionTextView = findViewById(R.id.showPokemonEvolutionTextView);
         if (evolutions.size() <= 1) {
             evolutionTextView.setVisibility(View.VISIBLE);
@@ -372,6 +410,6 @@ public class ShowPokemon extends AppCompatActivity {
 
             movesList.add(moveName);
         }
-
+        movesAdapter.notifyDataSetChanged();
     }
 }
