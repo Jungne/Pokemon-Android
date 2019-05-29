@@ -190,41 +190,43 @@ public class MyTeamsActivity extends AppCompatActivity {
             pos1 = myteamdetails.getCheckedItemPosition();
             String myselectedPokemon;
             myselectedPokemon = (String) myteamdetails.getAdapter().getItem(pos1);
+            myselectedPokemon = StringUtils.lowerCase(myselectedPokemon);
             Intent ShowPokemon = new Intent(this, ShowPokemon.class);
             ShowPokemon.putExtra("selectedTeamName", choosedTeam);
-            getPokemonDataAndShow(StringUtils.lowerCase(myselectedPokemon));
+            ShowPokemon.putExtra("pokemonID", myselectedPokemon);
+            startActivity(ShowPokemon);
         }
     }
 
-    private void getPokemonDataAndShow(String pokemonID) {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        showPokemon(response);
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                });
-
-        queue.add(jsonObjectRequest);
-    }
-
-    private void showPokemon(JSONObject jsonObject) {
-        Intent intent = new Intent(this, ShowPokemon.class);
-        intent.putExtra("pokemonID", pokemonID);
-        intent.putExtra("pokemonData", jsonObject.toString());
-        startActivity(intent);
-    }
+//    private void getPokemonDataAndShow(String pokemonID) {
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
+//
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>() {
+//
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        showPokemon(response);
+//                    }
+//                }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        // TODO: Handle error
+//
+//                    }
+//                });
+//
+//        queue.add(jsonObjectRequest);
+//    }
+//
+//    private void showPokemon(JSONObject jsonObject) {
+//        Intent intent = new Intent(this, ShowPokemon.class);
+//        intent.putExtra("pokemonID", pokemonID);
+//        intent.putExtra("pokemonData", jsonObject.toString());
+//        startActivity(intent);
+//    }
 
     protected void removePokemonFromTeam(String selectedTeamName, String selectedPokemon) {
         dbhelper.removePokemonFromTeam(selectedTeamName, selectedPokemon);
