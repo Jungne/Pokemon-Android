@@ -126,6 +126,7 @@
         android:id="@+id/checkWeaknessButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="OnClickButtons"
         android:text="Check weaknesses"
         app:layout_constraintStart_toStartOf="@id/removeTeambutton"
         app:layout_constraintTop_toBottomOf="@id/removeTeambutton" />

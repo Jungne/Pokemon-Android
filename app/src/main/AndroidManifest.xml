@@ -12,6 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".CheckWeakness"
+            android:label="Type coverage"
+            android:parentActivityName=".MyTeamsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.pokemonandroid.MyTeamsActivity" />
+        </activity>
+        <activity
             android:name=".MyTeamsActivity"
             android:label="@string/title_activity_my_teams"
             android:parentActivityName=".MainActivity"

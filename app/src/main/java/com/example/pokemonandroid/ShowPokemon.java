@@ -96,17 +96,6 @@ public class ShowPokemon extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.addToTeamMenuItem:
-                addToTeam();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     //Retrieves the information for a pokemon using volley
     private void getPokemonData(final String pokemonID) {
         String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
@@ -126,8 +115,12 @@ public class ShowPokemon extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("something went wrong");
+                        Context context = getApplicationContext();
+                        CharSequence text = "Network error";
+                        int duration = Toast.LENGTH_SHORT;
 
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
                     }
                 });
 
@@ -229,14 +222,6 @@ public class ShowPokemon extends AppCompatActivity {
         getPokemonSprite(pokemonID);
     }
 
-    private void addToTeam() {
-        Context context = getApplicationContext();
-        CharSequence text = "Added to team!";
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-    }
-
     private void setEvolutionChain(String pokemonID) {
         getEvolutionChainURL(pokemonID);
     }
@@ -260,8 +245,12 @@ public class ShowPokemon extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
+                        Context context = getApplicationContext();
+                        CharSequence text = "Network error";
+                        int duration = Toast.LENGTH_SHORT;
 
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
                     }
                 });
 
@@ -287,8 +276,12 @@ public class ShowPokemon extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
+                        Context context = getApplicationContext();
+                        CharSequence text = "Network error";
+                        int duration = Toast.LENGTH_SHORT;
 
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
                     }
                 });
 
@@ -317,7 +310,7 @@ public class ShowPokemon extends AppCompatActivity {
         }
 
         evolutionTextView.setVisibility(View.INVISIBLE);
-//        ArrayList imageViewsList = new ArrayList<ImageView>();
+
         for (String pokemonID : evolutions) {
             ImageView evolutionImageView = new ImageView(getApplicationContext());
             evolutionImageView.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
@@ -347,19 +340,13 @@ public class ShowPokemon extends AppCompatActivity {
 
         queue.add(imageRequest);
     }
-    /*public boolean addPokemonToTeam(View view)
-    {
-        //Show teams dialog.
-        selectTeamToAddToDialog();
-        return true;
-    }*/
+
     public boolean addPokemonToTeam(MenuItem item) {
         selectTeamToAddToDialog();
         return true;
     }
 
     protected void selectTeamToAddToDialog() {
-
         // get prompts.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(ShowPokemon.this);
         final View promptView = layoutInflater.inflate(R.layout.dialog_show_pokemon_select_team, null);

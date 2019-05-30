@@ -1,6 +1,7 @@
 package com.example.pokemonandroid;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static android.widget.AbsListView.CHOICE_MODE_SINGLE;
+import static android.widget.AdapterView.INVALID_POSITION;
 
 public class MyTeamsActivity extends AppCompatActivity {
     DBHandler dbhelper;
@@ -137,32 +140,6 @@ public class MyTeamsActivity extends AppCompatActivity {
                 allTeams.put(selectedTeamName, pokelist);
             }
 
-//            for (Map.Entry<String, List<String>> entry : allTeams.entrySet()) {
-//
-//                if (entry.getKey().equals(selectedTeamName)) {
-//                    List<String> pokelist = entry.getValue();
-//                    Boolean remove = false;
-//                    for (String pokemon : pokelist) {
-//                        if (pokemon.equals(selectedPokemon)) {
-//                            if (pokemon.equals(selectedPokemon)) {
-//                                remove = true;
-//                                break;
-//
-//                            } else if (pokemon == null || pokemon.equals("")) {
-//                                break;
-//                            }
-//
-//                        }
-//
-//                    }
-//                    if (remove == true) {
-//                        pokelist.remove(selectedPokemon);
-//                        removePokemonFromTeam(selectedTeamName, selectedPokemon);
-//
-//                    }
-//                    entry.setValue(pokelist);
-//                }
-//            }
             SelectedTeamDetails.remove(selectedPokemon);
             removemember_teamdetails.setSelection(-1);
             TeamDetailsViewAdapter.notifyDataSetChanged();
@@ -195,38 +172,19 @@ public class MyTeamsActivity extends AppCompatActivity {
             ShowPokemon.putExtra("selectedTeamName", choosedTeam);
             ShowPokemon.putExtra("pokemonID", myselectedPokemon);
             startActivity(ShowPokemon);
+        } else if (v.getId() == R.id.checkWeaknessButton) {
+            ListView myTeamsListView = findViewById(R.id.myTeamsListView);
+            int pos = myTeamsListView.getCheckedItemPosition();
+            if (pos == INVALID_POSITION) {
+                makeShortToast("Select a team");
+            } else {
+                String selectedTeam = (String) myTeamsListView.getAdapter().getItem(pos);
+                Intent intent = new Intent(this, CheckWeakness.class);
+                intent.putExtra("teamName", selectedTeam);
+                startActivity(intent);
+            }
         }
     }
-
-//    private void getPokemonDataAndShow(String pokemonID) {
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        String url = "https://pokeapi.co/api/v2/pokemon/" + pokemonID;
-//
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-//                new Response.Listener<JSONObject>() {
-//
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        showPokemon(response);
-//                    }
-//                }, new Response.ErrorListener() {
-//
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // TODO: Handle error
-//
-//                    }
-//                });
-//
-//        queue.add(jsonObjectRequest);
-//    }
-//
-//    private void showPokemon(JSONObject jsonObject) {
-//        Intent intent = new Intent(this, ShowPokemon.class);
-//        intent.putExtra("pokemonID", pokemonID);
-//        intent.putExtra("pokemonData", jsonObject.toString());
-//        startActivity(intent);
-//    }
 
     protected void removePokemonFromTeam(String selectedTeamName, String selectedPokemon) {
         dbhelper.removePokemonFromTeam(selectedTeamName, selectedPokemon);
@@ -270,4 +228,11 @@ public class MyTeamsActivity extends AppCompatActivity {
         alert.show();
     }
 
+    private void makeShortToast(String toastMessage) {
+        Context context = getApplicationContext();
+        CharSequence text = toastMessage;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
 }
